@@ -1,4 +1,4 @@
-package helper_test;
+package unit_tests;
 
 import java.util.HashMap;
 
@@ -36,7 +36,7 @@ public class NLPTests {
 		// Traverse map, test and assert true values
 		for(String script : scriptMap.keySet()) {
 			System.out.println("Testing for script: {" + script + "}");
-			String eliminated = StopWords.eliminateSentence(script);
+			String eliminated = StopWords.eliminateWords(script);
 			System.out.println("Eliminated to: {" + eliminated + "}");
 			Assert.assertTrue("Invalid elimination" + script,
 					eliminated.equals(scriptMap.get(script)));
@@ -48,13 +48,15 @@ public class NLPTests {
 		Object[] scripts = scriptMap.keySet().toArray();
 		long t = Performance.testTimeAvg(() -> {
 			String randomScript = (String) scripts[Randomizer.randomInt(0, scripts.length-1)];
-			StopWords.eliminateSentence(randomScript); // Execute only, no allocation
+			StopWords.eliminateWords(randomScript); // Execute only, no allocation
 		}, trials);
 		
 		// Assert it is less than L seconds
 		Assert.assertTrue("Average is more than 1 sec.", t < 1_000);
 		
 		System.out.println("Testing is done in " + t + " millisecond(s).");
+		
+		delimiterConsole();
 	}
 
 	@Test

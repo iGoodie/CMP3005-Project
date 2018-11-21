@@ -33,7 +33,7 @@ import com.programmer.igoodie.utils.io.FileUtils;
  */
 public class EnglishStemmer extends Stemmer {
 
-	private static final HashMap EXCEPTIONAL_WORDS = new HashMap(FileUtils.readExternalString("nlp-exception-lookup.csv"));
+	private static final WordMap EXCEPTIONAL_WORDS = new WordMap(FileUtils.readExternalString("nlp-exception-lookup.csv"));
 	private static final HashSet<String> STEP1A_INVARIANT_LIST = new HashSet<>(Arrays.asList(FileUtils.readExternalString("nlp-step4-list.csv").split("\\s*,\\s*")));
 	
 	private static final SuffixMap STEP2_SUFFIX_LOOKUP = new SuffixMap(FileUtils.readExternalString("nlp-step2-lookup.csv"));
@@ -57,7 +57,7 @@ public class EnglishStemmer extends Stemmer {
 	}
 
 	private void removeSuffix(String suffix) {
-		word = partBefore(suffix);
+		word = sequenceBefore(suffix);
 	}
 
 	private int lastNonVowelIndex() {
@@ -68,7 +68,7 @@ public class EnglishStemmer extends Stemmer {
 		return -1;
 	}
 
-	private String partBefore(String suffix) {
+	private String sequenceBefore(String suffix) {
 		return word.substring(0, word.lastIndexOf(suffix));
 	}
 
@@ -223,12 +223,12 @@ public class EnglishStemmer extends Stemmer {
 				removeSuffix(3); // Remove "dly" if suffix is in R1
 
 		} else if(word.endsWith("ingly")) {
-			if(containsVowel(partBefore("ingly")))
+			if(containsVowel(sequenceBefore("ingly")))
 				removeSuffix("ingly");
 			secondCheck = true;
 
 		} else if(word.endsWith("edly")) {
-			if(containsVowel(partBefore("edly")))
+			if(containsVowel(sequenceBefore("edly")))
 				removeSuffix("edly");
 			secondCheck = true;
 
@@ -237,12 +237,12 @@ public class EnglishStemmer extends Stemmer {
 				removeSuffix(1); // Remove "d" if suffix is in R1
 
 		} else if(word.endsWith("ing")) {
-			if(containsVowel(partBefore("ing")))
+			if(containsVowel(sequenceBefore("ing")))
 				removeSuffix("ing");
 			secondCheck = true;
 
 		} else if(word.endsWith("ed")) {
-			if(containsVowel(partBefore("ed")))
+			if(containsVowel(sequenceBefore("ed")))
 				removeSuffix("ed");
 			secondCheck = true;
 		}

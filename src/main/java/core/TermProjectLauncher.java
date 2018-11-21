@@ -1,12 +1,24 @@
 package core;
 
-import nlp.StopWords;
+import com.programmer.igoodie.utils.io.CommandLineArgs;
+import com.programmer.igoodie.utils.io.FileUtils;
 
 public class TermProjectLauncher {
-
+	
 	public static void main(String[] args) {
-		String e = StopWords.eliminateSentence("We have the most important feature");
-		System.out.println(e);
+		CommandLineArgs cla = new CommandLineArgs(args);
+		
+		if(!cla.containsArgument("scriptpath")) {
+			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\"");
+			System.out.println("\"scriptpath\" argument is missing.");
+			System.exit(-1);
+		}
+		
+		String script = FileUtils.readString(cla.getArgument("scriptpath"));
+		
+		QuestionAnswerer qa = new QuestionAnswerer(script);
+		
+		//QuestionAnswerer answerer = new QuestionAnswerer(script);
 		
 		// Read script
 		// Eliminate stop words

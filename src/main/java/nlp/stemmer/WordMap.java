@@ -1,11 +1,12 @@
 package nlp.stemmer;
 
+import java.util.HashMap;
 
-public class HashMap extends java.util.HashMap<String, String> {
+public class WordMap extends HashMap<String, String> {
 
 	private static final long serialVersionUID = 1_0_0L;
 
-	public HashMap(String csvData) {
+	public WordMap(String csvData) {
 		for(String line : csvData.split("\r?\n")) {
 			if(line.isEmpty()) return;
 			String[] cols = line.split("\\s*(,|=)\\s*", 2);

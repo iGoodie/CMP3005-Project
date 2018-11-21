@@ -12,7 +12,7 @@ public class StopWords {
 	public static final String[] STOP_WORDS_ARRAY = FileUtils.readExternalString("stop-word-list.csv").split("\r?\n");
 	public static final HashSet<String> STOP_WORDS = new HashSet<>(Arrays.asList(STOP_WORDS_ARRAY));
 	
-	public static final String eliminateSentence(String from) {
+	public static final String eliminateWords(String from) {
 		StringBuilder eliminated = new StringBuilder();
 		
 		/* Following examples are considered as a word;
