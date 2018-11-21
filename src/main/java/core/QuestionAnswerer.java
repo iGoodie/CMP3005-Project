@@ -8,6 +8,7 @@ import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import nlp.StopWords;
 
+// Truman - http://www.dailyscript.com/scripts/the-truman-show_early.html
 public class QuestionAnswerer {
 
 	private ArrayList<String> processedSentences = new ArrayList<>();
@@ -17,7 +18,6 @@ public class QuestionAnswerer {
 
 		// For every NLP preprocessed POJO, parse string
 		for(List<HasWord> sentenceRepresentation : docPreprocessor) {
-			// TODO: Fix incorrectly splitted apos
 			String sentence = merge(sentenceRepresentation);
 			if(sentence.split("\\s+").length < 3) continue;
 			System.out.println(sentence + " " + sentence.split("\\s+").length);
@@ -46,9 +46,10 @@ public class QuestionAnswerer {
 		for(int i=0, l=words.size(); i<l; i++) {
 			String word = words.get(i).word();
 			if(!isPunctuation(word) && !word.matches("\\s+")) {
-				sentence += word; // Append word if it's not a punctuation or a whitespace blob
-				if(i!=l-1) // Append space if the word is not the last one
+				if(!word.contains("'") && i!=0) // Append space, if it's not an apos nor the first word
 					sentence += " ";
+				
+				sentence += word; // Append the word then.
 			}
 		}
 

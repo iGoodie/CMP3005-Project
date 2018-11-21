@@ -20,7 +20,7 @@ public class StopWords {
 		 * 2) I'm
 		 * 3) Goose-stepped
 		 */
-		Pattern p = Pattern.compile("[a-zA-Z]+('|-)?[a-zA-Z]+");
+		Pattern p = Pattern.compile("[a-zA-Z0-9]+('|-)?[a-zA-Z0-9]+"); // Will also ignore punctuations.
 		Matcher m = p.matcher(from);
 		
 		while(m.find()) { // While we have matching words
