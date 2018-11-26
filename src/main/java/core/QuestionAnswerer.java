@@ -16,10 +16,10 @@ public class QuestionAnswerer {
 	public QuestionAnswerer(String script) {
 		DocumentPreprocessor docPreprocessor = new DocumentPreprocessor(new StringReader(script));
 
-		// For every NLP preprocessed POJO, parse string
+		// For every NLP preprocessed POJO, parse sentence string
 		for(List<HasWord> sentenceRepresentation : docPreprocessor) {
-			String sentence = merge(sentenceRepresentation);
-			if(sentence.split("\\s+").length < 3) continue;
+			String sentence = merge(sentenceRepresentation); // Merge processed sentences by eliminating non-semantical tokens
+			if(sentence.split("\\s+").length < 3) continue; // Skip sentences with less than 3 semantical tokens
 			System.out.println(sentence + " " + sentence.split("\\s+").length);
 
 			processedSentences.add(StopWords.eliminateWords(sentence));

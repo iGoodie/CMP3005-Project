@@ -1,24 +1,46 @@
 package core;
 
+import com.programmer.igoodie.utils.benchmark.Performance;
 import com.programmer.igoodie.utils.io.CommandLineArgs;
 import com.programmer.igoodie.utils.io.FileUtils;
 
 public class TermProjectLauncher {
 	
 	public static void main(String[] args) {
-		CommandLineArgs cla = new CommandLineArgs(args);
+		CommandLineArgs cla = new CommandLineArgs(args); // Parse given args into a better representation
 		
+		// Check if mandatory arguments were given or not
 		if(!cla.containsArgument("scriptpath")) {
-			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\"");
+			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\" -questionspath:\"path/to/questions.txt\" -answerspath:\"path/to/answers.txt\"");
 			System.out.println("\"scriptpath\" argument is missing.");
+			System.exit(-1);
+		} else if(!cla.containsArgument("questionspath")) {
+			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\" -questionspath:\"path/to/questions.txt\" -answerspath:\"path/to/answers.txt\"");
+			System.out.println("\"questionspath\" argument is missing.");
+			System.exit(-1);
+		} else if(!cla.containsArgument("answerspath")) {
+			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\" -questionspath:\"path/to/questions.txt\" -answerspath:\"path/to/answers.txt\"");
+			System.out.println("\"answerspath\" argument is missing.");
+			System.exit(-1);
+		} else if(!cla.getArgument("answerspath").endsWith(".txt")) {
+			System.out.println("\"answerpath\" should be a '.txt' file path");
 			System.exit(-1);
 		}
 		
+		// Read script from given path
 		String script = FileUtils.readString(cla.getArgument("scriptpath"));
+		System.out.println("Read done script from " + cla.getArgument("scriptpath"));
 		
-		QuestionAnswerer qa = new QuestionAnswerer(script);
+		// Read questions from given path
+		String[] questions = FileUtils.readString(cla.getArgument("questionspath")).split("\r?\n");
+		System.out.println("Read done questions from " + cla.getArgument("questionspath"));
 		
-		//QuestionAnswerer answerer = new QuestionAnswerer(script);
+		System.exit(0); // Here for debug purposes :V
+		
+		// Build answerer and let it attempt to answer the questions, then save it to given path
+		QuestionAnswerer answerer = new QuestionAnswerer(script);
+		String[] answers = answerer.answer(questions);
+		saveAnswers(answers, cla.getArgument("answerspath"), Performance.getOS().equals("windows"));
 		
 		// Read script
 		// Eliminate stop words
@@ -34,6 +56,11 @@ public class TermProjectLauncher {
 		// - Set relevant results = query
 		
 		// If relevant results.len == 1 assume it has an anwer
+	}
+	
+	private static void saveAnswers(String[] answers, String path, boolean includeLineFeed) {
+		String saveData = String.join(includeLineFeed ? "\r\n" : "\n", answers);
+		FileUtils.writeString(saveData, path);
 	}
 	
 }
