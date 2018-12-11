@@ -8,8 +8,10 @@ import org.junit.Test;
 import com.programmer.igoodie.utils.benchmark.Performance;
 import com.programmer.igoodie.utils.math.Randomizer;
 
+import answerer.ScriptLine;
 import nlp.StopWords;
 import nlp.stemmer.EnglishStemmer;
+import util.StringSearcher;
 
 /**
  * JUnit tests to test out Natural Language Processing (NPL)
@@ -85,6 +87,25 @@ public class NLPTests {
 		}
 		
 		delimiterConsole();
+	}
+
+	@Test
+	public void shouldMatchString() {
+		String source = "Some testing foo";
+		String pattern = " fo";
+		
+		Assert.assertTrue(StringSearcher.searchIndexNaive(source, pattern) != -1);
+		Assert.assertTrue(StringSearcher.searchIndexRabinKarp(source, pattern) != -1);
+	}
+
+	@Test
+	public void shouldParseScriptLine() {
+		String line = "Some foo text right in place";
+		ScriptLine scriptLine = new ScriptLine(line);
+		
+		System.out.println(scriptLine);
+		System.out.println("foao".hashCode());
+		System.out.println(scriptLine.contains("foo"));
 	}
 	
 }

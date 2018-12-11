@@ -40,6 +40,14 @@ public class EnglishStemmer extends Stemmer {
 	private static final SuffixMap STEP3_SUFFIX_LOOKUP = new SuffixMap(FileUtils.readExternalString("nlp-step3-lookup.csv"));
 	private static final String[] STEP4_SUFFIX_LIST = FileUtils.readExternalString("nlp-step4-list.csv").split("\\s*,\\s*");
 
+	public static String stemAll(String sentence) {
+		StringBuilder sb = new StringBuilder();
+		for(String word : sentence.split("\\s+")) {
+			sb.append(new EnglishStemmer(word).stem() + " ");
+		}
+		return sb.toString();
+	}
+	
 	public EnglishStemmer(String word) {
 		super(word);
 
@@ -121,7 +129,6 @@ public class EnglishStemmer extends Stemmer {
 	}
 
 	private boolean isShortSyllable(String seq) {
-		System.out.println(seq);
 		if(isVowel(seq.charAt(0)) || !isVowel(seq.charAt(1)))
 			return false;
 		
@@ -335,7 +342,7 @@ public class EnglishStemmer extends Stemmer {
 				removeSuffix("e");
 			
 		} else if(r2.endsWith("l")) {
-			if(r2.charAt(r2.length()-2) == 'l')
+			if(r2.length()>=2 && r2.charAt(r2.length()-2) == 'l')
 				removeSuffix("l");
 		}
 	}

@@ -5,10 +5,10 @@ import com.programmer.igoodie.utils.io.CommandLineArgs;
 import com.programmer.igoodie.utils.io.FileUtils;
 
 public class TermProjectLauncher {
-	
+
 	public static void main(String[] args) {
 		CommandLineArgs cla = new CommandLineArgs(args); // Parse given args into a better representation
-		
+
 		// Check if mandatory arguments were given or not
 		if(!cla.containsArgument("scriptpath")) {
 			System.out.println("- Usage: java -jar Launcher -scriptpath:\"path/to/script.txt\" -questionspath:\"path/to/questions.txt\" -answerspath:\"path/to/answers.txt\"");
@@ -26,41 +26,30 @@ public class TermProjectLauncher {
 			System.out.println("\"answerpath\" should be a '.txt' file path");
 			System.exit(-1);
 		}
-		
+
 		// Read script from given path
 		String script = FileUtils.readString(cla.getArgument("scriptpath"));
 		System.out.println("Read done script from " + cla.getArgument("scriptpath"));
-		
+
+		// TODO: Use caching with MD5 checksum
+
 		// Read questions from given path
 		String[] questions = FileUtils.readString(cla.getArgument("questionspath")).split("\r?\n");
 		System.out.println("Read done questions from " + cla.getArgument("questionspath"));
-		
-		System.exit(0); // Here for debug purposes :V
-		
-		// Build answerer and let it attempt to answer the questions, then save it to given path
+
+		// Build an answerer with read script
 		QuestionAnswerer answerer = new QuestionAnswerer(script);
-		String[] answers = answerer.answer(questions);
+		System.out.println("Answerer built with read script.");
+		
+		// Answer the questions via the answerer, then save them all
+		String[] answers = answerer.answerAll(questions);
 		saveAnswers(answers, cla.getArgument("answerspath"), Performance.getOS().equals("windows"));
-		
-		// Read script
-		// Eliminate stop words
-		// Stem script
-		// Split sentences
-		
-		// For each question;
-		// Eliminate stop words
-		// Stem words
-		// Set relevant results = script
-		// - For each word in question;
-		// - Query relevant results
-		// - Set relevant results = query
-		
-		// If relevant results.len == 1 assume it has an anwer
+		System.out.println("Answers are saved to " + cla.getArgument("answerspath"));
 	}
-	
+
 	private static void saveAnswers(String[] answers, String path, boolean includeLineFeed) {
 		String saveData = String.join(includeLineFeed ? "\r\n" : "\n", answers);
 		FileUtils.writeString(saveData, path);
 	}
-	
+
 }

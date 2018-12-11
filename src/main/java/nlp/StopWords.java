@@ -24,13 +24,13 @@ public class StopWords {
 		Matcher m = p.matcher(from);
 		
 		while(m.find()) { // While we have matching words
-			String word = m.group();
+			String word = m.group().toLowerCase();
 			if(!STOP_WORDS.contains(word)) { // Fetching from HashSet: O(1)
 				eliminated.append(word + " ");
 			}
 		}
 		
-		return eliminated.toString().toLowerCase().trim();
+		return eliminated.toString().trim();
 	}
 	
 }

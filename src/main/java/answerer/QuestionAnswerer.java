@@ -1,12 +1,13 @@
-package core;
+package answerer;
+
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
-import answerer.ScriptLine;
-import answerer.ScriptLine.ScriptWord;
+import core.GlobalConstants;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import nlp.StopWords;
@@ -16,32 +17,34 @@ import util.StringSearcher;
 // Truman - http://www.dailyscript.com/scripts/the-truman-show_early.html
 public class QuestionAnswerer implements GlobalConstants {
 
-	public ArrayList<ScriptLine> scriptLines = new ArrayList<>();
-	//private ArrayList<HashSet<String>> processedSentences = new ArrayList<>();
+	private ArrayList<HashSet<String>> processedSentences = new ArrayList<>();
 
 	public QuestionAnswerer(String script) {
 		DocumentPreprocessor docPreprocessor = new DocumentPreprocessor(new StringReader(script));
 
+		// Read script
+		// Eliminate stop words
+		// Stem script
+		// Split sentences
+
 		// For every NLP preprocessed POJO, parse sentence string
 		for(List<HasWord> sentenceRepresentation : docPreprocessor) {
 			String sentence = merge(sentenceRepresentation); // Merge processed sentences by eliminating non-semantical tokens
-
-			// Skip sentences with less than 3 semantical tokens
-			if(sentence.split("\\s+").length < 3) continue;
-
-			// Process and add the raw sentence to scriptLines
-			ScriptLine line = new ScriptLine(sentence);
-			scriptLines.add(line);
+			
+			if(sentence.split("\\s+").length < 3) continue; // Skip sentences with less than 3 semantical tokens
+			
+			// Process the sentence and add to the list
+			String processed = StopWords.eliminateWords(sentence);
+			processed = EnglishStemmer.stemAll(processed);
+			processedSentences.add(new HashSet<>(Arrays.asList(processed.split("\\s+"))));
 
 			if(DEBUG_MODE) {
 				System.out.println("Processed");
 				System.out.println("\tFrom: " + sentence + " " + sentence.split("\\s+").length);
-				System.out.println("\tTo: " + line);
+				System.out.println("\tTo: " + processedSentences.get(processedSentences.size()-1));
 				System.out.println();
 			}
 		}
-
-		System.out.println("Included Sentence Count: " + scriptLines.size());
 	}
 
 	private boolean isPunctuation(String ch) {
@@ -74,12 +77,11 @@ public class QuestionAnswerer implements GlobalConstants {
 
 	public String[] answerAll(String[] questions) {
 		String[] answers = new String[questions.length];
-
+		
 		for(int i=0; i<questions.length; i++) {
-			System.out.println(questions[i]);
 			answers[i] = answer(questions[i]);
 		}
-
+		
 		return answers;
 	}
 
@@ -87,48 +89,27 @@ public class QuestionAnswerer implements GlobalConstants {
 		question = StopWords.eliminateWords(question); // Eliminate stop words
 		question = EnglishStemmer.stemAll(question); // Stem each word
 		String[] questionWords = question.split("\\s+");
-
-		ArrayList<ScriptLine> possibleAnswerSentences = scriptLines;
-
+		ArrayList<HashSet<String>> possibleAnswerSentences = processedSentences;
+		
 		for(String questionWord : questionWords) {
 			possibleAnswerSentences = queryWithWord(possibleAnswerSentences, questionWord);
 		}
-
-		if(possibleAnswerSentences.size() > 1) {
-			System.out.println("GREATER");
-			return null; // TODO: find a better way to eliminate
+		
+		if(possibleAnswerSentences.size() == 1) {
+			return possibleAnswerSentences.get(0).toString();
 		}
-		else if(possibleAnswerSentences.size() == 1) {
-			// TODO eliminate words in question, see if only 1 word remains
-			// XXX OR join them with an "OR" keyword
-			ArrayList<ScriptWord> excludedOnes = possibleAnswerSentences.get(0).getExcluded(questionWords);
-			return excludedOnes.size()==1 ?
-					excludedOnes.get(0).getRaw() :
-						join(excludedOnes, " OR ");
-		} else {
-			return "No answer";
-		}
+		
+		return null;
 	}
-
-	private String join(ArrayList<ScriptWord> words, String delimiter) {
-		StringBuilder sb = new StringBuilder();
-		for(int i=0; i<words.size(); i++) {
-			sb.append(words.get(i).getRaw());
-			if(i != words.size()-1) {
-				sb.append(delimiter);
-			}
+	
+	private ArrayList<HashSet<String>> queryWithWord(ArrayList<HashSet<String>> from, String word) {
+		ArrayList<HashSet<String>> query = new ArrayList<>();
+		
+		for(HashSet<String> sentenceRepresentation : from) {
+			if(sentenceRepresentation.contains(word))
+				query.add(sentenceRepresentation);
 		}
-		return sb.toString();
-	}
-
-	private ArrayList<ScriptLine> queryWithWord(ArrayList<ScriptLine> from, String word) {
-		ArrayList<ScriptLine> query = new ArrayList<>();
-
-		for(ScriptLine line : from) {
-			if(line.contains(word))
-				query.add(line);
-		}
-
+		
 		return query;
 	}
 
