@@ -76,8 +76,8 @@ public class QuestionAnswerer implements GlobalConstants {
 		for(int i=0; i<questions.length; i++) {
 			answers[i] = answer(questions[i].toLowerCase());
 			
-			System.out.println("Question#" + i + " " + questions[i]);
-			System.out.println("Answer#" + i + " " + answers[i]);
+			System.out.println("Question#" + i + " = " + questions[i]);
+			System.out.println("Answer#" + i + " = " + answers[i]);
 			System.out.println();
 		}
 
@@ -94,7 +94,7 @@ public class QuestionAnswerer implements GlobalConstants {
 
 		for(String questionWord : questionWords) {
 			possibleAnswerSentences = queryWithWord(possibleAnswerSentences, questionWord);
-			if(DEBUG_MODE) System.out.println(possibleAnswerSentences.size());
+			if(DEBUG_MODE) System.out.println("len(Possible sentences) = " + possibleAnswerSentences.size());
 		}
 
 		// Classify by final query size
