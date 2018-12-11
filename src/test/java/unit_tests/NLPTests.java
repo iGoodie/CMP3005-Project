@@ -90,15 +90,6 @@ public class NLPTests {
 	}
 
 	@Test
-	public void shouldMatchString() {
-		String source = "Some testing foo";
-		String pattern = " fo";
-		
-		Assert.assertTrue(StringSearcher.searchIndexNaive(source, pattern) != -1);
-		Assert.assertTrue(StringSearcher.searchIndexRabinKarp(source, pattern) != -1);
-	}
-
-	@Test
 	public void shouldParseScriptLine() {
 		String line = "Some foo text right in place";
 		ScriptLine scriptLine = new ScriptLine(line);

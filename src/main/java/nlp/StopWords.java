@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import com.programmer.igoodie.utils.io.FileUtils;
 
+import util.StringSearcher;
+
 public class StopWords {
 
 	public static final String[] STOP_WORDS_ARRAY = FileUtils.readExternalString("stop-word-list.csv").split("\r?\n");
@@ -19,8 +21,9 @@ public class StopWords {
 		 * 1) Something
 		 * 2) I'm
 		 * 3) Goose-stepped
+		 * 4) 12:04
 		 */
-		Pattern p = Pattern.compile("[a-zA-Z0-9]+('|-)?[a-zA-Z0-9]+"); // Will also ignore punctuations.
+		Pattern p = Pattern.compile("[a-zA-Z0-9]+(('|-|:)[a-zA-Z0-9]+)?"); // Will also ignore punctuations.
 		Matcher m = p.matcher(from);
 		
 		while(m.find()) { // While we have matching words
@@ -31,6 +34,23 @@ public class StopWords {
 		}
 		
 		return eliminated.toString().trim();
+	}
+	
+	public static final String eliminateQuestions(String from) {
+		from = eliminateWord(from, "how many");
+		from = eliminateWord(from, "how much");
+		from = eliminateWord(from, "how often");
+		if(from.startsWith("what")) {
+			from = eliminateWord(from, "what ");
+			from = from.substring(from.indexOf(" "));
+		}
+		
+		return from;
+	}
+	
+	private static final String eliminateWord(String from, String pattern) {
+		int index = StringSearcher.searchIndexRabinKarp(from, pattern);
+		return index==-1 ? from : from.replace(pattern, "");
 	}
 	
 }

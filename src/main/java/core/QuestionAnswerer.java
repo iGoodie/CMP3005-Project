@@ -2,7 +2,6 @@ package core;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import answerer.ScriptLine;
@@ -17,7 +16,6 @@ import util.StringSearcher;
 public class QuestionAnswerer implements GlobalConstants {
 
 	public ArrayList<ScriptLine> scriptLines = new ArrayList<>();
-	//private ArrayList<HashSet<String>> processedSentences = new ArrayList<>();
 
 	public QuestionAnswerer(String script) {
 		DocumentPreprocessor docPreprocessor = new DocumentPreprocessor(new StringReader(script));
@@ -25,7 +23,7 @@ public class QuestionAnswerer implements GlobalConstants {
 		// For every NLP preprocessed POJO, parse sentence string
 		for(List<HasWord> sentenceRepresentation : docPreprocessor) {
 			String sentence = merge(sentenceRepresentation); // Merge processed sentences by eliminating non-semantical tokens
-
+			
 			// Skip sentences with less than 3 semantical tokens
 			if(sentence.split("\\s+").length < 3) continue;
 
@@ -76,14 +74,18 @@ public class QuestionAnswerer implements GlobalConstants {
 		String[] answers = new String[questions.length];
 
 		for(int i=0; i<questions.length; i++) {
-			System.out.println(questions[i]);
-			answers[i] = answer(questions[i]);
+			answers[i] = answer(questions[i].toLowerCase());
+			
+			System.out.println("Question#" + i + " " + questions[i]);
+			System.out.println("Answer#" + i + " " + answers[i]);
+			System.out.println();
 		}
 
 		return answers;
 	}
 
 	private String answer(String question) {
+		question = StopWords.eliminateQuestions(question); // Eliminate question words
 		question = StopWords.eliminateWords(question); // Eliminate stop words
 		question = EnglishStemmer.stemAll(question); // Stem each word
 		String[] questionWords = question.split("\\s+");
@@ -92,15 +94,14 @@ public class QuestionAnswerer implements GlobalConstants {
 
 		for(String questionWord : questionWords) {
 			possibleAnswerSentences = queryWithWord(possibleAnswerSentences, questionWord);
+			if(DEBUG_MODE) System.out.println(possibleAnswerSentences.size());
 		}
 
+		// Classify by final query size
 		if(possibleAnswerSentences.size() > 1) {
-			System.out.println("GREATER");
 			return null; // TODO: find a better way to eliminate
 		}
 		else if(possibleAnswerSentences.size() == 1) {
-			// TODO eliminate words in question, see if only 1 word remains
-			// XXX OR join them with an "OR" keyword
 			ArrayList<ScriptWord> excludedOnes = possibleAnswerSentences.get(0).getExcluded(questionWords);
 			return excludedOnes.size()==1 ?
 					excludedOnes.get(0).getRaw() :
@@ -131,13 +132,5 @@ public class QuestionAnswerer implements GlobalConstants {
 
 		return query;
 	}
-
-	// For each question;
-	// Eliminate stop words
-	// Stem words
-	// Set relevant results = script
-	// - For each word in question;
-	// - Query relevant results
-	// - Set relevant results = query
-	// If relevant results.len == 1 assume it has an anwer
+	
 }

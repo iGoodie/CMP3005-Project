@@ -35,11 +35,11 @@ public class TermProjectLauncher {
 
 		// Read questions from given path
 		String[] questions = FileUtils.readString(cla.getArgument("questionspath")).split("\r?\n");
-		System.out.println("Read done questions from " + cla.getArgument("questionspath"));
+		System.out.println("Read done questions from " + cla.getArgument("questionspath") + "\n");
 
 		// Build an answerer with read script
 		QuestionAnswerer answerer = new QuestionAnswerer(script);
-		System.out.println("Answerer built with read script.");
+		System.out.println("Answerer built with read script.\n");
 		
 		// Answer the questions via the answerer, then save them all
 		String[] answers = answerer.answerAll(questions);
