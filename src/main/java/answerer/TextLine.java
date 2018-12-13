@@ -1,14 +1,20 @@
 package answerer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import nlp.StopWords;
 import nlp.stemmer.EnglishStemmer;
 
-public class ScriptLine {
+public class TextLine implements Serializable {
+	
+	private static final long serialVersionUID = 0x000_001_000L;
 
-	public static class ScriptWord {
+	public static class TextWord implements Serializable {
+		
+		private static final long serialVersionUID = TextLine.serialVersionUID;		
+		
 		int index;
 		String raw;
 		String processed;
@@ -30,8 +36,8 @@ public class ScriptLine {
 				return this.processed.equals(other);
 			}
 			
-			if(other instanceof ScriptWord) {
-				ScriptWord sw2 = (ScriptWord) other;
+			if(other instanceof TextWord) {
+				TextWord sw2 = (TextWord) other;
 				return sw2.processed.equals(this.processed);
 			}
 				
@@ -45,9 +51,9 @@ public class ScriptLine {
 	}
 	
 	String[] rawWords;
-	HashSet<ScriptWord> words = new HashSet<>();
+	HashSet<TextWord> words = new HashSet<>();
 	
-	public ScriptLine(String sentence) {
+	public TextLine(String sentence) {
 		rawWords = sentence.split("\\s+");
 		
 		// Eliminate stop words
@@ -56,29 +62,29 @@ public class ScriptLine {
 		// Stem every word
 		String[] eliminatedWords = sentence.split("\\s+");
 		for(int i=0; i<eliminatedWords.length; i++) {
-			ScriptWord scriptWord = new ScriptWord();
-			scriptWord.index = i;
-			scriptWord.raw = eliminatedWords[i];
-			scriptWord.processed = new EnglishStemmer(eliminatedWords[i]).stem();
-			words.add(scriptWord);
+			TextWord textWord = new TextWord();
+			textWord.index = i;
+			textWord.raw = eliminatedWords[i];
+			textWord.processed = new EnglishStemmer(eliminatedWords[i]).stem();
+			words.add(textWord);
 		}
 	}
 	
 	@Override
 	public int hashCode() {
 		int h = 0;
-		for(ScriptWord sw : words)
+		for(TextWord sw : words)
 			h += sw.hashCode();
 		return h;
 	}
 	
-	public ArrayList<ScriptWord> getExcluded(String[] exclusionWords) {
-		ArrayList<ScriptWord> excluded = new ArrayList<>();
+	public ArrayList<TextWord> getExcluded(String[] exclusionWords) {
+		ArrayList<TextWord> excluded = new ArrayList<>();
 		
-		scriptWordLoop: for(ScriptWord sw : this.words) {
+		textWordLoop: for(TextWord sw : this.words) {
 			for(String exclusionWord : exclusionWords) {
 				if(sw.processed.equals(exclusionWord)) {
-					continue scriptWordLoop;
+					continue textWordLoop;
 				}
 			}
 			excluded.add(sw);
@@ -88,7 +94,7 @@ public class ScriptLine {
 	}
 	
 	public boolean contains(String stemmedWord) {
-		ScriptWord sw = new ScriptWord();
+		TextWord sw = new TextWord();
 		sw.processed = stemmedWord;
 		return words.contains(sw);
 	}
@@ -96,7 +102,7 @@ public class ScriptLine {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("{");
-		for(ScriptWord sw : words) {
+		for(TextWord sw : words) {
 			sb.append(sw);
 		}
 		sb.append("}");
