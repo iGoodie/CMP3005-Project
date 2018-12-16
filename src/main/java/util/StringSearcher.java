@@ -23,9 +23,10 @@ public class StringSearcher {
 		
 		int hashPattern = hashString(pattern);
 		for(int i=0; i<=lenSource-lenPattern; i++) {
-			int subsHash = hashString(source.substring(i, i+lenPattern));
+			String substr = source.substring(i, i+lenPattern);
+			int subsHash = hashString(substr);
 			if(subsHash == hashPattern)
-				if(source.substring(i, i+lenPattern).equals(pattern))
+				if(substr.equals(pattern))
 					return i;
 		}
 		

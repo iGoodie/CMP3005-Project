@@ -14,7 +14,7 @@ public final class TermProjectLauncher {
 
 		// Check if mandatory arguments were given or not
 		if (!properArgsPassed(cla)) {
-			System.out.println("System is now terminating.");
+			System.out.println("System is now terminating...");
 			System.exit(-1);
 		}
 
