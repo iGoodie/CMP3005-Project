@@ -121,8 +121,7 @@ public class QuestionAnswerer implements GlobalConstants, Serializable {
 	}
 
 	private String answer(String question) {
-		question = StopWords.eliminateQuestions(question); // Eliminate question
-		// words
+		question = StopWords.eliminateQuestions(question); // Eliminate question words
 		question = StopWords.eliminateWords(question); // Eliminate stop words
 		question = EnglishStemmer.stemAll(question); // Stem each word
 		String[] questionWords = question.split("\\s+");

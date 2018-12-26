@@ -14,12 +14,12 @@ public class AnswererTest {
 
 	@Test
 	public void programShouldAnswerCorrectly() {
-		String testingArgs = "-scriptpath:.\\samples\\script_in.txt " + "-questionspath:.\\samples\\questions_in.txt";
+		String testingArgs = "-textpath:.\\samples\\text_in.txt " + "-questionspath:.\\samples\\questions_in.txt";
 
 		CommandLineArgs cla = new CommandLineArgs(testingArgs.split("\\s+"));
 
 		// Read script from given path
-		String script = FileUtils.readString(cla.getArgument("scriptpath"));
+		String text = FileUtils.readString(cla.getArgument("textpath"));
 		String[] questions = FileUtils.readString(cla.getArgument("questionspath")).split("\r?\n");
 
 		// Read comparing answers
@@ -27,7 +27,7 @@ public class AnswererTest {
 				.readString("E:\\eclipse\\workspace\\CMP3005-Project\\samples\\answers_actual_out.txt").split("\r?\n");
 
 		// Build answerer and get answers
-		QuestionAnswerer answerer = new QuestionAnswerer(script);
+		QuestionAnswerer answerer = new QuestionAnswerer(text);
 		String[] answers = answerer.answerAll(questions);
 
 		// Actual assertions
